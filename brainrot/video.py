@@ -11,10 +11,10 @@ PATH = os.path.dirname(__file__)
 
 def get_post():
     title = "This is a title"
-    content = """1 This is the content of the post 2 This is the content of the post 3 This is the content of the post 4 This is the content of the post 5 This is the content of the post
-    6 This is the content of the post
-    7 This is the content of the post
-    """
+    content = (
+        "This is the content of the post\n"
+    )
+
     return title, content
 
 
@@ -38,7 +38,6 @@ def generate_tts():
 
 
 def generate_video():
-    # make this function of the length of the text video
     audio_length = generate_tts()
 
     video = editor.VideoFileClip(
@@ -53,7 +52,7 @@ def generate_video():
     result = editor.CompositeVideoClip([video, txt_clip])  # Overlay text on video
     result.write_videofile(
         PATH + "/videos/completed_videos/test.mp4", fps=25
-    )  # Many options...
+    )
 
 
 def main():

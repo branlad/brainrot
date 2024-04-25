@@ -12,6 +12,7 @@ moviepy = "^1.0.3"
 gtts = "^2.5.1"
 pydub = "^0.25.1"
 pillow = "^10.3.0"
+python-ffmpeg = "^2.0.12"
 
 
 [tool.poetry.scripts]
