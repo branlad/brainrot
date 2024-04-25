@@ -1,3 +1,6 @@
 __pycache__
 .venv
+.github
+videos/
 .env
+.mp4
