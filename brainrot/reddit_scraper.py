@@ -2,11 +2,17 @@ import praw
 import os
 from dotenv import load_dotenv
 from dataclasses import dataclass
+from better_profanity import profanity
 
 def get_current_index(file_path):
     try:
         with open(file_path, 'r') as file:
             return int(file.read().strip())
+    except FileNotFoundError:
+        # If the file does not exist, create it and initialize with 0
+        with open(file_path, 'w') as file:
+            file.write("0")
+        return 0
     except Exception as e:
         print(f"Error reading index file: {e}")
         return 0  # Default to 0 if file does not exist or error occurs
@@ -50,7 +56,10 @@ def get_post():
 
             for post in subreddit.hot(limit=10):
                 if post.is_self and not post.stickied:
-                    return RedditPost(title=post.title, text=post.selftext)
+                    profanity.load_censor_words()
+                    title = profanity.censor(post.title)
+                    text = profanity.censor(post.selftext)
+                    return RedditPost(title=title, text=text)
         except Exception as e:
             print(f"Error accessing subreddit or processing posts: {e}")
 
