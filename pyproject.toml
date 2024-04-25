@@ -6,13 +6,16 @@ authors = ["Brandon <bladner0717@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "3.10.12"
 praw = "^7.7.1"
 moviepy = "^1.0.3"
+gtts = "^2.5.1"
+pydub = "^0.25.1"
+pillow = "^10.3.0"
 
 
 [tool.poetry.scripts]
-video = "brainrot.videos.video:main"
+video = "brainrot.video:main"
 
 [build-system]
 requires = ["poetry-core"]
