@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../static/styles.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>Rotting</title>
 </head>
 <body>
@@ -18,9 +19,9 @@
         <div class="dropdown">
             <button class="dropbtn">Subreddit Choice</button>
             <div class="dropdown-content">
-                <a href="#">r/NoSleep</a>
-                <a href="#">r/AITA</a>
-                <a href="#">r/ScaryStories 1.3</a>
+                <a onclick="fetchPost('NoSleep')">NoSleep</a>
+                <a onclick="fetchPost('AmItheAsshole')">AITA</a>
+                <a onclick="fetchPost('ScaryStories')">ScaryStories 1.3</a>
             </div>
         </div>
 
@@ -43,5 +44,30 @@
         </div>
 
     </div>
+
+    <div id="result">
+        <h2>Post Title</h2>
+        <p id="postTitle"></p>
+        <h2>Post Content</h2>
+        <p id="postContent"></p>
+    </div>
+
+    <script>
+        function fetchPost(subreddit) {
+            console.log(subreddit)
+            $.ajax({
+                url: '/api/get_post',
+                type: 'GET',
+                data: { subreddit_name: subreddit },
+                success: function(response) {
+                    $('#postTitle').text(response.title);
+                    $('#postContent').text(response.text);
+                },
+                error: function() {
+                    alert('Error fetching post.');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
