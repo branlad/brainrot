@@ -2,6 +2,22 @@ from moviepy import editor
 import os
 
 
+def get_post():
+    title = "This is a title"
+    content = """
+    This is the content of the post
+    This is the content of the post
+    This is the content of the post
+    This is the content of the post
+    This is the content of the post
+    This is the content of the post
+    This is the content of the post
+    This is the content of the post
+    This is the content of the post
+    This is the content of the post
+    This is the content of the post
+    """
+
 def generate_video():
     # make this function of the length of the text video
     
