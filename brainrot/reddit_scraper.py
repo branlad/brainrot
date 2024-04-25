@@ -4,36 +4,56 @@ from dotenv import load_dotenv
 from dataclasses import dataclass
 from better_profanity import profanity
 
-def get_current_index(file_path):
-    try:
-        with open(file_path, 'r') as file:
-            return int(file.read().strip())
-    except FileNotFoundError:
-        # If the file does not exist, create it and initialize with 0
-        with open(file_path, 'w') as file:
-            file.write("0")
-        return 0
-    except Exception as e:
-        print(f"Error reading index file: {e}")
-        return 0  # Default to 0 if file does not exist or error occurs
 
-def update_index(file_path, current_index, max_index):
-    try:
-        new_index = (current_index + 1) % max_index  # Cycle back to 0 after reaching the max index
-        with open(file_path, 'w') as file:
-            file.write(str(new_index))
-    except Exception as e:
-        print(f"Error updating index file: {e}")
+SUBREDDITS = ["shortscarystories", "nosleep", "creepypasta", "horrorstories"]
 
 @dataclass
 class RedditPost:
     title: str
     text: str
 
-def get_post():
+def get_post(subreddit_name=None):
+    """Fetch and return a post from a specified subreddit, cycling through a list if none is specified."""
+    reddit = setup_reddit_client()
+    if reddit is None:
+        return None
+
+    if subreddit_name is None:
+        subreddit_name = choose_subreddit()
+
+    try:
+        subreddit = reddit.subreddit(subreddit_name)
+        print(f"Accessing subreddit: {subreddit_name}")
+        for post in subreddit.hot(limit=10):
+            if post.is_self and not post.stickied:
+                return post_content(post)
+    except praw.exceptions.PRAWException as e:
+        print(f"Error accessing subreddit or processing posts: {e}")
+
+    print("No suitable text posts found.")
+    return None
+
+def get_post_from_url(url):
+    """Fetch and return a Reddit post by URL."""
+    reddit = setup_reddit_client()
+    if reddit is None:
+        return None
+
+    try:
+        post = reddit.submission(url=url)
+        if post.is_self:
+            return post_content(post)
+    except praw.exceptions.PRAWException as e:
+        print(f"Error accessing specific post: {e}")
+    return None
+
+
+########## HELPER FUNCTIONS ##########
+
+def setup_reddit_client():
     load_dotenv()
     try:
-        reddit = praw.Reddit(
+        return praw.Reddit(
             client_id=os.getenv("REDDIT_CLIENT_ID"),
             client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
             user_agent=os.getenv("REDDIT_USER_AGENT")
@@ -42,29 +62,39 @@ def get_post():
         print(f"Error setting up Reddit API: {e}")
         return None
 
-    subreddits = ["shortscarystories", "nosleep", "creepypasta", "horrorstories"]
+def post_content(post):
+    """Censor and return the title and text of a post."""
+    profanity.load_censor_words()
+    title = profanity.censor(post.title)
+    text = profanity.censor(post.selftext)
+    return RedditPost(title=title, text=text)
+
+def choose_subreddit():
+    subreddits = SUBREDDITS
     index_file = 'subreddit_index.txt'
+    current_index = get_current_index(index_file)
+    update_index(index_file, current_index, len(subreddits))
+    return subreddits[current_index]
 
-    for _ in range(len(subreddits)):
-        current_index = get_current_index(index_file)
-        subreddit_name = subreddits[current_index]
-        update_index(index_file, current_index, len(subreddits))
+def get_current_index(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            return int(file.read().strip())
+    except FileNotFoundError:
+        with open(file_path, 'w') as file:
+            file.write("0")
+        return 0
+    except Exception as e:
+        print(f"Error reading index file: {e}")
+        return 0
 
-        try:
-            subreddit = reddit.subreddit(subreddit_name)
-            print(f"Accessing subreddit: {subreddit_name}\n")
+def update_index(file_path, current_index, max_index):
+    try:
+        with open(file_path, 'w') as file:
+            file.write(str((current_index + 1) % max_index))
+    except Exception as e:
+        print(f"Error updating index file: {e}")
 
-            for post in subreddit.hot(limit=10):
-                if post.is_self and not post.stickied:
-                    profanity.load_censor_words()
-                    title = profanity.censor(post.title)
-                    text = profanity.censor(post.selftext)
-                    return RedditPost(title=title, text=text)
-        except Exception as e:
-            print(f"Error accessing subreddit or processing posts: {e}")
-
-    print("No suitable text posts found.\n")
-    return None
 
 if __name__ == "__main__":
     post = get_post()
