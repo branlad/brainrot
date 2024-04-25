@@ -8,10 +8,13 @@ import math
 
 PATH = os.path.dirname(__file__)
 
+TTS_AUDIO_PATH = PATH + "/videos/audio_files/tts_audio.mp3"
+SRT_FILE_PATH = PATH + "/videos/audio_files/subtitles.srt"
+
 
 def get_post():
     title = "This is a title"
-    content = "This is the content of the post. I really hope this generates the correct srt file."
+    content = "This is"
 
     return title, content
 
@@ -20,15 +23,13 @@ def create_tts_mp3_file():
     title, content = get_post()
 
     tts = gTTS(content, lang="en", slow=False)
-    tts.save(PATH + "/videos/audio_files/hello_world.mp3")
+    tts.save(TTS_AUDIO_PATH)
 
 
 def create_srt_file():
     load_dotenv()
     aai.settings.api_key = os.getenv("ASSEMBLYAI_KEY")
-    transcript = aai.Transcriber().transcribe(
-        PATH + "/videos/audio_files/hello_world.mp3"
-    )
+    transcript = aai.Transcriber().transcribe(TTS_AUDIO_PATH)
 
     for i in range(1, 10):
         try:
@@ -37,7 +38,7 @@ def create_srt_file():
         except Exception:
             continue
 
-    with open(PATH + "/videos/audio_files/subtitle_example.srt", "w") as f:
+    with open(SRT_FILE_PATH, "w") as f:
         f.write(srt)
 
 
@@ -62,7 +63,7 @@ def get_subtitle_clips(subtitles):
 
 
 def combine_audio_files(video):
-    tts_voice = editor.AudioFileClip(PATH + "/videos/audio_files/hello_world.mp3")
+    tts_voice = editor.AudioFileClip(TTS_AUDIO_PATH)
     # background_music = editor.AudioFileClip(PATH + "/videos/audio_files/background_music.mp3")
 
     audio = editor.concatenate_audioclips([tts_voice])
@@ -79,7 +80,7 @@ def crop_video(video):
 
 
 def create_video():
-    subtitles = pysrt.open(PATH + "/videos/audio_files/subtitle_example.srt")
+    subtitles = pysrt.open(SRT_FILE_PATH)
     video = editor.VideoFileClip(
         PATH + "/videos/background_videos/parkour.mp4"
     ).subclip(0, math.ceil(subtitles[-1].end.ordinal / 1000.0))
@@ -89,7 +90,7 @@ def create_video():
     result = editor.CompositeVideoClip(
         [video] + get_subtitle_clips(subtitles)
     )
-    result.write_videofile(PATH + "/videos/completed_videos/test.mp4", fps=25)
+    result.write_videofile(PATH + "/videos/completed_videos/increment_this.mp4", fps=25)
 
 
 def get_video():
