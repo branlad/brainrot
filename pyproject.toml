@@ -11,13 +11,14 @@ praw = "^7.7.1"
 moviepy = "^1.0.3"
 gtts = "^2.5.1"
 pydub = "^0.25.1"
-pillow = "^10.3.0"
-python-ffmpeg = "^2.0.12"
 python-dotenv = "^1.0.1"
+assemblyai = "^0.26.0"
+pysrt = "^1.1.2"
+pillow = "9.5.0"
 
 
 [tool.poetry.scripts]
-video = "brainrot.video:main"
+video = "brainrot.video:get_video"
 
 [build-system]
 requires = ["poetry-core"]

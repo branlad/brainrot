@@ -3,26 +3,32 @@ import os
 from dotenv import load_dotenv
 from dataclasses import dataclass
 
+
 def get_current_index(file_path):
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, "r") as file:
             return int(file.read().strip())
     except Exception as e:
         print(f"Error reading index file: {e}")
         return 0  # Default to 0 if file does not exist or error occurs
 
+
 def update_index(file_path, current_index, max_index):
     try:
-        new_index = (current_index + 1) % max_index  # Cycle back to 0 after reaching the max index
-        with open(file_path, 'w') as file:
+        new_index = (
+            current_index + 1
+        ) % max_index  # Cycle back to 0 after reaching the max index
+        with open(file_path, "w") as file:
             file.write(str(new_index))
     except Exception as e:
         print(f"Error updating index file: {e}")
+
 
 @dataclass
 class RedditPost:
     title: str
     text: str
+
 
 def get_post():
     load_dotenv()
@@ -30,14 +36,14 @@ def get_post():
         reddit = praw.Reddit(
             client_id=os.getenv("REDDIT_CLIENT_ID"),
             client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
-            user_agent=os.getenv("REDDIT_USER_AGENT")
+            user_agent=os.getenv("REDDIT_USER_AGENT"),
         )
     except Exception as e:
         print(f"Error setting up Reddit API: {e}")
         return None
 
     subreddits = ["shortscarystories", "nosleep", "creepypasta", "horrorstories"]
-    index_file = 'subreddit_index.txt'
+    index_file = "subreddit_index.txt"
 
     for _ in range(len(subreddits)):
         current_index = get_current_index(index_file)
@@ -57,6 +63,7 @@ def get_post():
     print("No suitable text posts found.\n")
     return None
 
+
 if __name__ == "__main__":
     post = get_post()
     if post:
@@ -64,4 +71,3 @@ if __name__ == "__main__":
         print(post.text)
     else:
         print("Failed to retrieve a post.")
-        
