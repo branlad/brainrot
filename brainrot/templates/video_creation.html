@@ -21,19 +21,19 @@
             <ul class="checkbox-dropdown-list">
               <li>
                 <label>
-                  <input type="checkbox" value="Vejle" name="city" />Undertale (scary)</label>
+                  <input type="checkbox" id="scary" name="city" />Undertale (scary)</label>
               </li>
               <li>
                 <label>
-                  <input type="checkbox" value="Horsens" name="city" />Undertale (happy)</label>
+                  <input type="checkbox" id="happy" name="city" />Undertale (happy)</label>
               </li>
               <li>
                 <label>
-                  <input type="checkbox" value="Kolding" name="city" />Wii Shop</label>
+                  <input type="checkbox" id="wii" name="city" />Wii Shop</label>
               </li>
               <li>
                 <label>
-                  <input type="checkbox" value="Kolding" name="city" />Minecraft Music</label>
+                  <input type="checkbox" id="minecraft" name="city" />Minecraft Music</label>
               </li>
               
             </ul>
@@ -44,19 +44,19 @@
             <ul class="checkbox-dropdown-list">
               <li>
                 <label>
-                  <input type="checkbox" value="Vejle" name="city" />Tom</label>
+                  <input type="checkbox" id="Tom" name="city" />Tom</label>
               </li>
               <li>
                 <label>
-                  <input type="checkbox" value="Horsens" name="city" />Amanda</label>
+                  <input type="checkbox" id="Amanda" name="city" />Amanda</label>
               </li>
               <li>
                 <label>
-                  <input type="checkbox" value="Kolding" name="city" />Steve</label>
+                  <input type="checkbox" id="Steve" name="city" />Steve</label>
               </li>
               <li>
                 <label>
-                  <input type="checkbox" value="Kolding" name="city" />Robin</label>
+                  <input type="checkbox" id="Robin" name="city" />Robin</label>
               </li>
               
             </ul>
@@ -67,19 +67,19 @@
             <ul class="checkbox-dropdown-list">
               <li>
                 <label>
-                  <input type="checkbox" value="Vejle" name="city" />Minecraft</label>
+                  <input type="checkbox" id="minecraft_music" name="city" />Minecraft</label>
               </li>
               <li>
                 <label>
-                  <input type="checkbox" value="Horsens" name="city" />Subway Surfers</label>
+                  <input type="checkbox" value="subway" name="city" />Subway Surfers</label>
               </li>
               <li>
                 <label>
-                  <input type="checkbox" value="Kolding" name="city" />Temple Run</label>
+                  <input type="checkbox" value="temple" name="city" />Temple Run</label>
               </li>
               <li>
                 <label>
-                  <input type="checkbox" value="Kolding" name="city" />Soap Cutting</label>
+                  <input type="checkbox" value="soap" name="city" />Soap Cutting</label>
               </li>
               
             </ul>
@@ -88,7 +88,7 @@
     </div>
 
     <div class="url-form">
-        <form action="/video.html" method="post">
+        <form action="javascript:generate()">
             <label for="fname">Enter URL for Specific Reddit Post</label>
             <input type="text" id="fname" name="" placeholder="reddit.com/r/nosleep/sskfy37cm47">
             <button type="submit" id="generate">GENERATE</button>
@@ -99,31 +99,11 @@
     </div>
 
     <script>
-        function fetchPost(subreddit) {
-            console.log(subreddit)
-            $.ajax({
-                url: '/api/get_post',
-                type: 'GET',
-                data: { subreddit_name: subreddit },
-                success: function(response) {
-                    $('#postTitle').text(response.title);
-                    $('#postContent').text(response.text);
-                },
-                error: function() {
-                    alert('Error fetching post.');
-                }
-            });
+        function generate(){
+            console.log('test')
         }
-
-        $(".checkbox-dropdown").click(function () {
-        $(this).toggleClass("is-active");
-    });
-
-    $(".checkbox-dropdown ul").click(function(e) {
-        e.stopPropagation();
-    });
-
     </script>
+
 
     
 </body>
