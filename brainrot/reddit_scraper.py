@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from better_profanity import profanity
 
 
-SUBREDDITS = ["shortscarystories", "nosleep", "creepypasta", "horrorstories"]
+SUBREDDITS = ["shortscarystories", "nosleep", "creepypasta", "horrorstories", "amitheasshole"]
 
 @dataclass
 class RedditPost:
