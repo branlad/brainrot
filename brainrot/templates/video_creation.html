@@ -88,7 +88,7 @@
     </div>
 
     <div class="url-form">
-        <form action="javascript:generate()">
+        <form action="javascript:handleClick()">
             <label for="fname">Enter URL for Specific Reddit Post</label>
             <input type="text" id="fname" name="" placeholder="reddit.com/r/nosleep/sskfy37cm47">
             <button type="submit" id="generate">GENERATE</button>
@@ -99,11 +99,21 @@
     </div>
 
     <script>
-        function generate(){
-            console.log('test')
-        }
-    </script>
 
+        $(".checkbox-dropdown").click(function () {
+        $(this).toggleClass("is-active");
+        });
+
+        $(".checkbox-dropdown ul").click(function(e) {
+            e.stopPropagation();
+        });
+
+
+        function handleClick() {
+            console.log('click')
+    }
+
+    </script>
 
     
 </body>
