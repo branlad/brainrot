@@ -1,12 +1,9 @@
 from flask import Flask, render_template, jsonify, request
 from .reddit_scraper import get_post, get_post_from_url
 from .video import get_video
-<<<<<<< HEAD
 import json
-=======
 from .reddit_scraper import get_post, get_post_from_url
 from .video import get_video
->>>>>>> main
 
 app = Flask(__name__)
 
@@ -39,7 +36,6 @@ def api_get_post_from_url():
 def index():
     return render_template("index.html")
 
-<<<<<<< HEAD
 @app.route("/add", methods=["GET", "POST"])
 def video():
     if request.method == "POST":
@@ -50,21 +46,10 @@ def video():
         return jsonify({"url": data})
     elif request.method == "GET":
         return render_template("video_creation.html")
-=======
-
-@app.route("/add", methods=["POST"])
-def video():
-    return render_template("video_creation.html")
-
->>>>>>> main
 
 def main():
     app.run(debug=True)
 
 
-<<<<<<< HEAD
 if __name__ == "__main__":
-=======
-if __name__ == "__main__":
->>>>>>> main
     main()
