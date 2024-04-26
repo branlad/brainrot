@@ -14,7 +14,7 @@ import shutil
 
 PATH = os.path.dirname(__file__)
 
-MAX_LENGTH = 15
+MAX_LENGTH = 30
 
 TTS_AUDIO_PATH = PATH + "/videos/audio_files/tts_audio.mp3"
 SRT_FILE_PATH = PATH + "/videos/audio_files/subtitles.srt"
