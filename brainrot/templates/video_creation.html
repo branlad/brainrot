@@ -10,64 +10,112 @@
 <body>
     <div class="video_container">
         <video autoplay muted loop id="myVideo">
-            <source src="../static/soap.mp4" type="video/mp4">
+            <source src="../static/subway.mp4" type="video/mp4">
         </video>
     </div>
 
     <div class="video_options">
 
-        <div class="dropdown">
-            <button class="dropbtn">Subreddit Choice</button>
-            <div class="dropdown-content">
-                <a onclick="fetchPost('NoSleep')">NoSleep</a>
-                <a onclick="fetchPost('AmItheAsshole')">AITA</a>
-                <a onclick="fetchPost('ScaryStories')">ScaryStories 1.3</a>
-            </div>
-        </div>
+        <div class="checkbox-dropdown">
+            Choose Music
+            <ul class="checkbox-dropdown-list">
+              <li>
+                <label>
+                  <input type="checkbox" id="scary" name="city" />Undertale (scary)</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" id="happy" name="city" />Undertale (happy)</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" id="wii" name="city" />Wii Shop</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" id="minecraft" name="city" />Minecraft Music</label>
+              </li>
+              
+            </ul>
+          </div>
 
-        <div class="dropdown">
-            <button class="dropbtn">Video Choice</button>
-            <div class="dropdown-content">
-                <a href="#">Minecraft</a>
-                <a href="#">Subway Surfers</a>
-                <a href="#">Soap Videos</a>
-            </div>
-        </div>
+          <div class="checkbox-dropdown">
+            Choose Voice
+            <ul class="checkbox-dropdown-list">
+              <li>
+                <label>
+                  <input type="checkbox" id="Tom" name="city" />Tom</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" id="Amanda" name="city" />Amanda</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" id="Steve" name="city" />Steve</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" id="Robin" name="city" />Robin</label>
+              </li>
+              
+            </ul>
+          </div>
 
-        <div class="dropdown">
-            <button class="dropbtn">Voice Choice</button>
-            <div class="dropdown-content">
-                <a href="#">Man</a>
-                <a href="#">Woman</a>
-                <a href="#">Spongebob</a>
-            </div>
-        </div>
+          <div class="checkbox-dropdown">
+            Choose Background
+            <ul class="checkbox-dropdown-list">
+              <li>
+                <label>
+                  <input type="checkbox" id="minecraft_music" name="city" />Minecraft</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" value="subway" name="city" />Subway Surfers</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" value="temple" name="city" />Temple Run</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" value="soap" name="city" />Soap Cutting</label>
+              </li>
+              
+            </ul>
+          </div>
 
     </div>
 
-    <div id="result">
-        <h2>Post Title</h2>
-        <p id="postTitle"></p>
-        <h2>Post Content</h2>
-        <p id="postContent"></p>
+    <div class="url-form">
+      <label for="fname">Enter URL for Specific Reddit Post</label>
+      <input type="text" id="fname" name="" placeholder="reddit.com/r/nosleep/sskfy37cm47">
+      <button onclick="sendToFlask()" type="submit" id="generate">GENERATE</button>
     </div>
 
     <script>
-        function fetchPost(subreddit) {
-            console.log(subreddit)
-            $.ajax({
-                url: '/api/get_post',
-                type: 'GET',
-                data: { subreddit_name: subreddit },
-                success: function(response) {
-                    $('#postTitle').text(response.title);
-                    $('#postContent').text(response.text);
-                },
-                error: function() {
-                    alert('Error fetching post.');
-                }
-            });
-        }
+      $(".checkbox-dropdown").click(function () {
+        $(this).toggleClass("is-active");
+        });
+ 
+        $(".checkbox-dropdown ul").click(function(e) {
+            e.stopPropagation();
+        });
+
+
+      function sendToFlask(){
+        var url = document.getElementById('fname').value;
+        console.log(url)
+        return fetch('/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({"url": url}),
+        })
+        .then(response => response.json())
+        .then(data => console.log(data.url));
+      }
     </script>
 </body>
 </html>

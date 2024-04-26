@@ -34,46 +34,101 @@ video {
 
 }
 
-.dropdown {
-    position: relative;
-    display: inline-block;
+
+.checkbox-dropdown {
+    width: 200px;
+    border: 1px solid #aaa;
+    background-color: #333;
+    color: white;
+    border-radius: 8px;
     padding: 10px;
+    position: relative;
+    margin: 20px;
+    
+    user-select: none;
 }
 
-.dropbtn {
-    background-color: #616562;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    border-radius: 8px;
-}
-
-.dropdown-content {
-    display: none;
+/* Display CSS arrow to the right of the dropdown text */
+.checkbox-dropdown:after {
+    content:'';
+    height: 0;
     position: absolute;
-    background-color: #616562;
-    min-width: 160px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    z-index: 1;
     border-radius: 8px;
+    width: 0;
+    border: 6px solid transparent;
+    border-top-color: #000;
+    top: 50%;
+    right: 10px;
+    margin-top: -3px;
 }
 
-.dropdown-content a {
+/* Reverse the CSS arrow when the dropdown is active */
+.checkbox-dropdown.is-active:after {
+    border-bottom-color: #000;
+    border-top-color: #fff;
+    margin-top: -9px;
+}
+
+.checkbox-dropdown-list {
+    list-style: none;
+    background-color: #333;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 100%; /* align the dropdown right below the dropdown text */
+    border: inherit;
+    left: -1px; /* align the dropdown to the left */
+    right: -1px; /* align the dropdown to the right */
+    opacity: 0; /* hide the dropdown */
+   
+    transition: opacity 0.4s ease-in-out;
+    height: 165px;
+    border-radius: 8px;
+    overflow: scroll;
+    overflow-x: hidden;
+    pointer-events: none; /* avoid mouse click events inside the dropdown */
+}
+.is-active .checkbox-dropdown-list {
+    opacity: 1; /* display the dropdown */
+    pointer-events: auto; /* make sure that the user still can select checkboxes */
+}
+
+.checkbox-dropdown-list li label {
+    display: block;
+    border-radius: 8px;
+    padding: 10px;
+   
+    transition: all 0.2s ease-out;
+}
+
+.checkbox-dropdown-list li label:hover {
+    border-radius: 8px;
+    background-color: #555;
     color: white;
-    padding: 12px 16px;
-    font-size: 12px;
-    text-decoration: none;
-    display: block;
-    border-radius: 8px;
 }
 
-.dropdown-content a:hover {
-    background-color: #989292;
+.url-form{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.dropdown:hover .dropdown-content {
-    display: block;
+.url-form label{
+    display: flex;
+    color: white;
+    margin-bottom: 10px; /* Optional: Adds space between label and input */
+    width: 500px;
+    justify-content: center;
+    font-size: 24px; /* Font size */
+    font-weight: bold; /* Font weight */
+    text-align: center; /* Text alignment */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow for better visibility */
 }
+.url-form input {
+    margin-bottom: 10px; /* Optional: Adds space between label and input */
+    width: 500px;
+}
+
 
