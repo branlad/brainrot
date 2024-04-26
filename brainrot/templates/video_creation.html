@@ -16,40 +16,86 @@
 
     <div class="video_options">
 
-        <div class="radio_group">
-            <p class="group_label">Subreddit Choice</p>
-            <div class="options">
-                <label><input type="radio" name="subreddit" onclick="fetchPost('NoSleep')"> NoSleep</label>
-                <label><input type="radio" name="subreddit" onclick="fetchPost('AmItheAsshole')"> AITA</label>
-                <label><input type="radio" name="subreddit" onclick="fetchPost('ScaryStories')"> ScaryStories 1.3</label>
-            </div>
-        </div>
+        <div class="checkbox-dropdown">
+            Choose Music
+            <ul class="checkbox-dropdown-list">
+              <li>
+                <label>
+                  <input type="checkbox" value="Vejle" name="city" />Undertale (scary)</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" value="Horsens" name="city" />Undertale (happy)</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" value="Kolding" name="city" />Wii Shop</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" value="Kolding" name="city" />Minecraft Music</label>
+              </li>
+              
+            </ul>
+          </div>
 
-        <div class="radio_group">
-            <p class="group_label">Video Choice</p>
-            <div class="options">
-                <label><input type="radio" name="video"> Minecraft</label>
-                <label><input type="radio" name="video"> Subway Surfers</label>
-                <label><input type="radio" name="video"> Soap Videos</label>
-            </div>
-        </div>
+          <div class="checkbox-dropdown">
+            Choose Voice
+            <ul class="checkbox-dropdown-list">
+              <li>
+                <label>
+                  <input type="checkbox" value="Vejle" name="city" />Tom</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" value="Horsens" name="city" />Amanda</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" value="Kolding" name="city" />Steve</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" value="Kolding" name="city" />Robin</label>
+              </li>
+              
+            </ul>
+          </div>
 
-        <div class="radio_group">
-            <p class="group_label">Voice Choice</p>
-            <div class="options">
-                <label><input type="radio" name="voice"> Man</label>
-                <label><input type="radio" name="voice"> Woman</label>
-                <label><input type="radio" name="voice"> Spongebob</label>
-            </div>
-        </div>
+          <div class="checkbox-dropdown">
+            Choose Background
+            <ul class="checkbox-dropdown-list">
+              <li>
+                <label>
+                  <input type="checkbox" value="Vejle" name="city" />Minecraft</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" value="Horsens" name="city" />Subway Surfers</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" value="Kolding" name="city" />Temple Run</label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" value="Kolding" name="city" />Soap Cutting</label>
+              </li>
+              
+            </ul>
+          </div>
 
     </div>
 
-    <div id="result">
-        <h2>Post Title</h2>
-        <p id="postTitle"></p>
-        <h2>Post Content</h2>
-        <p id="postContent"></p>
+    <div class="url-form">
+        <form action="/video.html" method="post">
+            <label for="fname">Enter URL for Specific Reddit Post</label>
+            <input type="text" id="fname" name="" placeholder="reddit.com/r/nosleep/sskfy37cm47">
+            <button type="submit" id="generate">GENERATE</button>
+
+        </form>
+        
+        
     </div>
 
     <script>
@@ -68,6 +114,17 @@
                 }
             });
         }
+
+        $(".checkbox-dropdown").click(function () {
+        $(this).toggleClass("is-active");
+    });
+
+    $(".checkbox-dropdown ul").click(function(e) {
+        e.stopPropagation();
+    });
+
     </script>
+
+    
 </body>
 </html>
