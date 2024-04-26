@@ -51,6 +51,7 @@ def create_srt_file():
     for i in range(1, 10):
         try:
             srt_data = transcript.export_subtitles_srt(chars_per_caption=(5 * i))
+            srt_data = transcript.export_subtitles_srt(chars_per_caption=(5 * i))
             break
         except Exception:
             continue
@@ -59,6 +60,7 @@ def create_srt_file():
     srt_data = "\n\n".join(str(s) for s in subtitles)
 
     with open(SRT_FILE_PATH, "w") as f:
+        f.write(srt_data)
         f.write(srt_data)
 
 
@@ -85,6 +87,7 @@ def get_subtitle_clips(subtitles):
 def combine_audio_files(video):
     tts_voice = editor.AudioFileClip(TTS_AUDIO_PATH)
     tts_voice = tts_voice.subclip(0, min(60, tts_voice.duration))
+    tts_voice = tts_voice.subclip(0, min(60, tts_voice.duration))
     # background_music = editor.AudioFileClip(PATH + "/videos/audio_files/background_music.mp3")
 
     audio = editor.concatenate_audioclips([tts_voice])
@@ -102,6 +105,7 @@ def crop_video(video):
 
 def create_video():
     subtitles = pysrt.open(SRT_FILE_PATH)
+
 
     video = editor.VideoFileClip(
         PATH + "/videos/background_videos/parkour.mp4"

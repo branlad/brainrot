@@ -1,6 +1,8 @@
 from flask import Flask, render_template, jsonify, request
 from .reddit_scraper import get_post, get_post_from_url
 from .video import get_video
+from .reddit_scraper import get_post, get_post_from_url
+from .video import get_video
 
 app = Flask(__name__)
 
