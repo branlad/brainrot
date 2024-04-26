@@ -88,23 +88,25 @@
     </div>
 
     <div class="url-form">
-        <form action="javascript:generate()">
-            <label for="fname">Enter URL for Specific Reddit Post</label>
-            <input type="text" id="fname" name="" placeholder="reddit.com/r/nosleep/sskfy37cm47">
-            <button type="submit" id="generate">GENERATE</button>
-
-        </form>
-        
-        
+      <label for="fname">Enter URL for Specific Reddit Post</label>
+      <input type="text" id="fname" name="" placeholder="reddit.com/r/nosleep/sskfy37cm47">
+      <button onclick="sendToFlask()" type="submit" id="generate">GENERATE</button>
     </div>
 
     <script>
-        function generate(){
-            console.log('test')
-        }
+      function sendToFlask(){
+        var url = document.getElementById('fname').value;
+        console.log(url)
+        return fetch('/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({"url": url}),
+        })
+        .then(response => response.json())
+        .then(data => console.log(data.url));
+      }
     </script>
-
-
-    
 </body>
 </html>
