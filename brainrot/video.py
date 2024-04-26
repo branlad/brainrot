@@ -8,6 +8,10 @@ import math
 
 from elevenlabs import client, save
 
+from datetime import timedelta
+import srt
+import shutil
+
 PATH = os.path.dirname(__file__)
 
 TTS_AUDIO_PATH = PATH + "/videos/audio_files/tts_audio.mp3"
@@ -21,47 +25,68 @@ def verify_file_paths():
     os.makedirs(os.path.dirname(BRAINROT_PATH), exist_ok=True)
 
 
-def create_tts_mp3_file(post):
-    content = post.title + " " + post.text
-
-    words = content.split(" ")[:200]
-    # for i, word in enumerate(words):
-    #     if word[-1] in {".", ",", "!"}:
-    #         words[i] = word + ". "
-    #     else:
-    #         words[i] = word + " "
-
-    limited_content = "slow pronunciation: " + " ".join(words)
-
-    eleven_client = client.ElevenLabs(api_key=os.getenv("ELEVENLABS_KEY"))
-    audio = eleven_client.generate(
-        text=limited_content, voice="Antoni", model="eleven_multilingual_v2"
-    )
-    save(audio=audio, filename=TTS_AUDIO_PATH)
-
-    # tts = gTTS(limited_content, lang="en", slow=False)
-    # tts.save(TTS_AUDIO_PATH)
+def create_tts_mp3_file(content):
 
 
-def create_srt_file():
+    # eleven_client = client.ElevenLabs(api_key=os.getenv("ELEVENLABS_KEY"))
+    # audio = eleven_client.generate(
+    #     text=content, voice="Antoni", model="eleven_multilingual_v2"
+    # )
+    # save(audio=audio, filename=TTS_AUDIO_PATH)
+
+    tts = gTTS(content, lang="en", slow=True)
+    tts.save(TTS_AUDIO_PATH)
+
+    return content
+    
+    
+# def create_srt_file(content):
+#     load_dotenv()
+#     aai.settings.api_key = os.getenv("ASSEMBLYAI_KEY")
+#     transcript = aai.Transcriber().transcribe(TTS_AUDIO_PATH)
+
+#     for i in range(1, 10):
+#         try:
+#             srt_data = transcript.export_subtitles_srt(chars_per_caption=(5 * i))
+#             break
+#         except Exception:
+#             continue
+
+#     subtitles = [s for s in pysrt.from_string(srt_data) if s.end.ordinal / 1000.0 <= 60]
+#     srt_data = '\n\n'.join(str(s) for s in subtitles)
+    
+#     with open(SRT_FILE_PATH, "w") as f:
+#         f.write(srt_data) 
+  
+
+    
+    
+def create_srt_file(content):
     load_dotenv()
     aai.settings.api_key = os.getenv("ASSEMBLYAI_KEY")
     transcript = aai.Transcriber().transcribe(TTS_AUDIO_PATH)
+    total_audio_duration = transcript.words[-1].end + 1
 
-    for i in range(1, 10):
-        try:
-            srt_data = transcript.export_subtitles_srt(chars_per_caption=(5 * i))
-            srt_data = transcript.export_subtitles_srt(chars_per_caption=(5 * i))
-            break
-        except Exception:
-            continue
+    recognized_words = [word for word in transcript.words if word.confidence > 0.5]
+    recognized_timings = [word.end for word in recognized_words]
 
-    subtitles = [s for s in pysrt.from_string(srt_data) if s.end.ordinal / 1000.0 <= 60]
-    srt_data = "\n\n".join(str(s) for s in subtitles)
+    full_words = content.split()
+    subtitles = []
+    for i, word in enumerate(full_words):
+        if word in recognized_words:
+            timing = recognized_timings[recognized_words.index(word)]
+        else:
+            timing = (i / len(full_words)) * total_audio_duration
 
+        subtitle = srt.Subtitle(index=i, start=timedelta(seconds=timing), end=timedelta(seconds=timing + 1), content=word)
+        subtitles.append(subtitle)
+
+    srt_data = srt.compose(subtitles)
+    
     with open(SRT_FILE_PATH, "w") as f:
         f.write(srt_data)
-        f.write(srt_data)
+        
+    shutil.copy(SRT_FILE_PATH, SRT_FILE_PATH + "1")
 
 
 def get_subtitle_clips(subtitles):
@@ -104,9 +129,7 @@ def crop_video(video):
 
 
 def create_video():
-    subtitles = pysrt.open(SRT_FILE_PATH)
-
-
+    subtitles = pysrt.open(SRT_FILE_PATH + "1")
     video = editor.VideoFileClip(
         PATH + "/videos/background_videos/parkour.mp4"
     ).subclip(0, min(60, math.ceil(subtitles[-1].end.ordinal / 1000.0)))
@@ -123,7 +146,11 @@ class Post:
 
 
 def get_video():
+    post = Post("hello world", "will this work as expected??")
+    content = post.title + " " + post.text
+    limited_content = " ".join(content.split(" ")[:200])
+    
     verify_file_paths()
-    create_tts_mp3_file(Post("Title is this", "how has your day been?"))
-    create_srt_file()
+    create_tts_mp3_file(limited_content)
+    create_srt_file(limited_content)
     create_video()
