@@ -36,6 +36,7 @@ def api_get_post_from_url():
 def index():
     return render_template("index.html")
 
+
 @app.route("/add", methods=["GET", "POST"])
 def video():
     if request.method == "POST":
@@ -46,6 +47,7 @@ def video():
         return jsonify({"url": data})
     elif request.method == "GET":
         return render_template("video_creation.html")
+
 
 def main():
     app.run(debug=True)
