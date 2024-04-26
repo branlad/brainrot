@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import pysrt
 import math
 
-from .reddit_scraper import get_post_from_url
+from elevenlabs import client, save
 
 PATH = os.path.dirname(__file__)
 
@@ -24,11 +24,23 @@ def verify_file_paths():
 def create_tts_mp3_file(post):
     content = post.title + " " + post.text
 
-    words = content.split()
-    limited_content = ' '.join(words[:250])
+    words = content.split(" ")[:200]
+    # for i, word in enumerate(words):
+    #     if word[-1] in {".", ",", "!"}:
+    #         words[i] = word + ". "
+    #     else:
+    #         words[i] = word + " "
 
-    tts = gTTS(limited_content, lang="en", slow=False)
-    tts.save(TTS_AUDIO_PATH)
+    limited_content = "slow pronunciation: " + " ".join(words)
+
+    eleven_client = client.ElevenLabs(api_key=os.getenv("ELEVENLABS_KEY"))
+    audio = eleven_client.generate(
+        text=limited_content, voice="Antoni", model="eleven_multilingual_v2"
+    )
+    save(audio=audio, filename=TTS_AUDIO_PATH)
+
+    # tts = gTTS(limited_content, lang="en", slow=False)
+    # tts.save(TTS_AUDIO_PATH)
 
 
 def create_srt_file():
@@ -44,8 +56,8 @@ def create_srt_file():
             continue
 
     subtitles = [s for s in pysrt.from_string(srt_data) if s.end.ordinal / 1000.0 <= 60]
-    srt_data = '\n\n'.join(str(s) for s in subtitles)
-    
+    srt_data = "\n\n".join(str(s) for s in subtitles)
+
     with open(SRT_FILE_PATH, "w") as f:
         f.write(srt_data)
 
@@ -93,17 +105,21 @@ def create_video():
 
     video = editor.VideoFileClip(
         PATH + "/videos/background_videos/parkour.mp4"
-    ).subclip(0, 60)
+    ).subclip(0, min(60, math.ceil(subtitles[-1].end.ordinal / 1000.0)))
     video = crop_video(combine_audio_files(video))
 
-    result = editor.CompositeVideoClip(
-        [video] + get_subtitle_clips(subtitles)
-    )
+    result = editor.CompositeVideoClip([video] + get_subtitle_clips(subtitles))
     result.write_videofile(BRAINROT_PATH, fps=25)
 
 
-def get_video(post):
+class Post:
+    def __init__(self, title, text):
+        self.title = title
+        self.text = text
+
+
+def get_video():
     verify_file_paths()
-    create_tts_mp3_file(post)
+    create_tts_mp3_file(Post("Title is this", "how has your day been?"))
     create_srt_file()
     create_video()

@@ -17,6 +17,7 @@ assemblyai = "^0.26.0"
 pysrt = "^1.1.2"
 pillow = "9.5.0"
 better-profanity = "^0.7.0"
+elevenlabs = "^1.1.2"
 
 
 [tool.poetry.scripts]
