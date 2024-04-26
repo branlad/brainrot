@@ -34,13 +34,78 @@ video {
 
 }
 
-.dropdown {
+.radio_group {
     position: relative;
     display: inline-block;
     padding: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    margin-bottom: 10px; /* Space between each radio group */
+    width: 200px; /* Fixed width */
+    box-sizing: border-box; /* Includes padding and border in the width */
+    overflow: hidden; /* Prevents content from spilling out */
+    vertical-align: top; /* Aligns the dropdowns to the top */
+    transition: max-height 0.3s ease-in-out; /* Smooth transition for expanding effect */
 }
 
-.dropbtn {
+.group_label {
+    cursor: pointer;
+    font-weight: bold;
+    padding-bottom: 5px; /* Visual separation from options */
+}
+
+.options {
+    display: block; 
+    max-height: 0; /* Initially no height */
+    overflow: hidden; /* Prevents content from showing when not expanded */
+    transition: max-height 0.3s ease-in-out; /* Smooth transition for expanding effect */
+}
+
+.radio_group:hover .options {
+    max-height: 500px; /* Enough height to show all options */
+}
+
+.radio_group label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+}
+
+.radio_group input[type="radio"] {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+/* Custom radio button styling */
+.radio_group input[type="radio"]::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border-radius: 50%;
+    border: 2px solid #007BFF;
+    background-color: #fff;
+}
+
+.radio_group input[type="radio"]:checked::before {
+    background-color: #007BFF;
+}
+
+.radio_group input[type="radio"]:focus {
+    outline: none; /* Removes the default focus outline */
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Custom focus ring */
+}
+
+.radio_group input[type="radio"]:hover::before {
+    border-color: #0056b3;
+}
+
+
+/* .dropbtn {
     background-color: #616562;
     color: white;
     padding: 16px;
@@ -75,5 +140,5 @@ video {
 
 .dropdown:hover .dropdown-content {
     display: block;
-}
+} */
 
