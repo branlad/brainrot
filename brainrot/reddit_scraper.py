@@ -28,6 +28,7 @@ def get_post(subreddit_name=None):
         print(f"Accessing subreddit: {subreddit_name}")
         for post in subreddit.hot(limit=10):
             if post.is_self and not post.stickied:
+                print(f"Found post: {post.url}")
                 return post_content(post)
     except praw.exceptions.PRAWException as e:
         print(f"Error accessing subreddit or processing posts: {e}")
@@ -45,6 +46,7 @@ def get_post_from_url(url):
     try:
         post = reddit.submission(url=url)
         if post.is_self:
+            print(f"Found post: {post.url}")
             return post_content(post)
     except praw.exceptions.PRAWException as e:
         print(f"Error accessing specific post: {e}")

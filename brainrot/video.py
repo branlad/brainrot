@@ -14,6 +14,8 @@ import shutil
 
 PATH = os.path.dirname(__file__)
 
+MAX_LENGTH = 15
+
 TTS_AUDIO_PATH = PATH + "/videos/audio_files/tts_audio.mp3"
 SRT_FILE_PATH = PATH + "/videos/audio_files/subtitles.srt"
 BRAINROT_PATH = PATH + "/videos/completed_videos/brainrot.mp4"
@@ -26,67 +28,48 @@ def verify_file_paths():
 
 
 def create_tts_mp3_file(content):
-
-
-    # eleven_client = client.ElevenLabs(api_key=os.getenv("ELEVENLABS_KEY"))
-    # audio = eleven_client.generate(
-    #     text=content, voice="Antoni", model="eleven_multilingual_v2"
-    # )
-    # save(audio=audio, filename=TTS_AUDIO_PATH)
-
-    tts = gTTS(content, lang="en", slow=True)
-    tts.save(TTS_AUDIO_PATH)
-
-    return content
-    
-    
-# def create_srt_file(content):
-#     load_dotenv()
-#     aai.settings.api_key = os.getenv("ASSEMBLYAI_KEY")
-#     transcript = aai.Transcriber().transcribe(TTS_AUDIO_PATH)
-
-#     for i in range(1, 10):
-#         try:
-#             srt_data = transcript.export_subtitles_srt(chars_per_caption=(5 * i))
-#             break
-#         except Exception:
-#             continue
-
-#     subtitles = [s for s in pysrt.from_string(srt_data) if s.end.ordinal / 1000.0 <= 60]
-#     srt_data = '\n\n'.join(str(s) for s in subtitles)
-    
-#     with open(SRT_FILE_PATH, "w") as f:
-#         f.write(srt_data) 
+    eleven_client = client.ElevenLabs(api_key=os.getenv("ELEVENLABS_KEY"))
+    audio = eleven_client.generate(
+        text=content, voice="Antoni", model="eleven_multilingual_v2"
+    )
+    save(audio=audio, filename=TTS_AUDIO_PATH)
   
-
-    
     
 def create_srt_file(content):
     load_dotenv()
     aai.settings.api_key = os.getenv("ASSEMBLYAI_KEY")
-    transcript = aai.Transcriber().transcribe(TTS_AUDIO_PATH)
-    total_audio_duration = transcript.words[-1].end + 1
+    transcriber = aai.Transcriber()
+    transcript = transcriber.transcribe(TTS_AUDIO_PATH)
+    
+    total_audio_duration = transcript.words[-1].end / 1000
 
-    recognized_words = [word for word in transcript.words if word.confidence > 0.5]
-    recognized_timings = [word.end for word in recognized_words]
+    if not transcript.words:
+        raise ValueError("No words were transcribed, cannot generate SRT file.")
 
     full_words = content.split()
     subtitles = []
-    for i, word in enumerate(full_words):
-        if word in recognized_words:
-            timing = recognized_timings[recognized_words.index(word)]
-        else:
-            timing = (i / len(full_words)) * total_audio_duration
+    last_timing = 0  # Keep track of the last timing to avoid large gaps
 
-        subtitle = srt.Subtitle(index=i, start=timedelta(seconds=timing), end=timedelta(seconds=timing + 1), content=word)
-        subtitles.append(subtitle)
+    for i, word in enumerate(full_words):
+        recognized_word = next((w for w in transcript.words if w.text == word and w.confidence > 0.5), None)
+        if recognized_word:
+            timing = recognized_word.end / 1000
+        else:
+            # Estimate timing by adding average word duration if the word wasn't recognized
+            avg_word_duration = total_audio_duration / len(transcript.words)
+            timing = last_timing + avg_word_duration
+
+        if timing > last_timing:  # Ensure timings are sequential
+            subtitle = srt.Subtitle(index=i, start=timedelta(seconds=last_timing), end=timedelta(seconds=timing), content=word)
+            subtitles.append(subtitle)
+            last_timing = timing
 
     srt_data = srt.compose(subtitles)
-    
+    subtitles = [s for s in pysrt.from_string(srt_data) if s.end.ordinal / 1000.0 <= MAX_LENGTH]
+    srt_data = '\n\n'.join(str(s) for s in subtitles)
+
     with open(SRT_FILE_PATH, "w") as f:
         f.write(srt_data)
-        
-    shutil.copy(SRT_FILE_PATH, SRT_FILE_PATH + "1")
 
 
 def get_subtitle_clips(subtitles):
@@ -94,10 +77,11 @@ def get_subtitle_clips(subtitles):
     for sub in subtitles:
         txt_clip = editor.TextClip(
             sub.text,
-            fontsize=100,
+            fontsize=130,
             color="white",
             stroke_color="black",
-            stroke_width=0.5,
+            stroke_width=1,
+            font="Arial-Bold,"
         )
         txt_clip = txt_clip.set_start(sub.start.ordinal / 1000.0).set_duration(
             (sub.end - sub.start).ordinal / 1000.0
@@ -111,8 +95,7 @@ def get_subtitle_clips(subtitles):
 
 def combine_audio_files(video):
     tts_voice = editor.AudioFileClip(TTS_AUDIO_PATH)
-    tts_voice = tts_voice.subclip(0, min(60, tts_voice.duration))
-    tts_voice = tts_voice.subclip(0, min(60, tts_voice.duration))
+    tts_voice = tts_voice.subclip(0, min(MAX_LENGTH, tts_voice.duration))
     # background_music = editor.AudioFileClip(PATH + "/videos/audio_files/background_music.mp3")
 
     audio = editor.concatenate_audioclips([tts_voice])
@@ -129,10 +112,11 @@ def crop_video(video):
 
 
 def create_video():
-    subtitles = pysrt.open(SRT_FILE_PATH + "1")
+    subtitles = pysrt.open(SRT_FILE_PATH)
+    
     video = editor.VideoFileClip(
         PATH + "/videos/background_videos/parkour.mp4"
-    ).subclip(0, min(60, math.ceil(subtitles[-1].end.ordinal / 1000.0)))
+    ).subclip(0, min(MAX_LENGTH, math.ceil(subtitles[-1].end.ordinal / 1000.0)))
     video = crop_video(combine_audio_files(video))
 
     result = editor.CompositeVideoClip([video] + get_subtitle_clips(subtitles))
@@ -145,12 +129,15 @@ class Post:
         self.text = text
 
 
-def get_video():
-    post = Post("hello world", "will this work as expected??")
+def get_video(post):
+    # post = Post("hello world", "will this work as expected??")
     content = post.title + " " + post.text
     limited_content = " ".join(content.split(" ")[:200])
     
     verify_file_paths()
+    print("Creating tts audio file...")
     create_tts_mp3_file(limited_content)
+    print("Creating srt file...")
     create_srt_file(limited_content)
+    print("Creating video...")
     create_video()
