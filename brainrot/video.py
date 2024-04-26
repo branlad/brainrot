@@ -6,23 +6,28 @@ from dotenv import load_dotenv
 import pysrt
 import math
 
+from .reddit_scraper import get_post_from_url
+
 PATH = os.path.dirname(__file__)
 
 TTS_AUDIO_PATH = PATH + "/videos/audio_files/tts_audio.mp3"
 SRT_FILE_PATH = PATH + "/videos/audio_files/subtitles.srt"
+BRAINROT_PATH = PATH + "/videos/completed_videos/brainrot.mp4"
 
 
-def get_post():
-    title = "This is a title"
-    content = "This is"
+def verify_file_paths():
+    os.makedirs(os.path.dirname(TTS_AUDIO_PATH), exist_ok=True)
+    os.makedirs(os.path.dirname(SRT_FILE_PATH), exist_ok=True)
+    os.makedirs(os.path.dirname(BRAINROT_PATH), exist_ok=True)
 
-    return title, content
 
+def create_tts_mp3_file(post):
+    content = post.title + " " + post.text
 
-def create_tts_mp3_file():
-    title, content = get_post()
+    words = content.split()
+    limited_content = ' '.join(words[:250])
 
-    tts = gTTS(content, lang="en", slow=False)
+    tts = gTTS(limited_content, lang="en", slow=False)
     tts.save(TTS_AUDIO_PATH)
 
 
@@ -33,13 +38,16 @@ def create_srt_file():
 
     for i in range(1, 10):
         try:
-            srt = transcript.export_subtitles_srt(chars_per_caption=(5 * i))
+            srt_data = transcript.export_subtitles_srt(chars_per_caption=(5 * i))
             break
         except Exception:
             continue
 
+    subtitles = [s for s in pysrt.from_string(srt_data) if s.end.ordinal / 1000.0 <= 60]
+    srt_data = '\n\n'.join(str(s) for s in subtitles)
+    
     with open(SRT_FILE_PATH, "w") as f:
-        f.write(srt)
+        f.write(srt_data)
 
 
 def get_subtitle_clips(subtitles):
@@ -64,6 +72,7 @@ def get_subtitle_clips(subtitles):
 
 def combine_audio_files(video):
     tts_voice = editor.AudioFileClip(TTS_AUDIO_PATH)
+    tts_voice = tts_voice.subclip(0, min(60, tts_voice.duration))
     # background_music = editor.AudioFileClip(PATH + "/videos/audio_files/background_music.mp3")
 
     audio = editor.concatenate_audioclips([tts_voice])
@@ -81,19 +90,20 @@ def crop_video(video):
 
 def create_video():
     subtitles = pysrt.open(SRT_FILE_PATH)
+
     video = editor.VideoFileClip(
         PATH + "/videos/background_videos/parkour.mp4"
-    ).subclip(0, math.ceil(subtitles[-1].end.ordinal / 1000.0))
-
+    ).subclip(0, 60)
     video = crop_video(combine_audio_files(video))
 
     result = editor.CompositeVideoClip(
         [video] + get_subtitle_clips(subtitles)
     )
-    result.write_videofile(PATH + "/videos/completed_videos/increment_this.mp4", fps=25)
+    result.write_videofile(BRAINROT_PATH, fps=25)
 
 
-def get_video():
-    create_tts_mp3_file()
+def get_video(post):
+    verify_file_paths()
+    create_tts_mp3_file(post)
     create_srt_file()
     create_video()
