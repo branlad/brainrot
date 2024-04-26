@@ -6,7 +6,7 @@ authors = ["Brandon <bladner0717@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.10.12"
+python = ">=3.8,<3.11"
 praw = "^7.7.1"
 moviepy = "^1.0.3"
 gtts = "^2.5.1"
@@ -21,6 +21,7 @@ better-profanity = "^0.7.0"
 
 [tool.poetry.scripts]
 video = "brainrot.video:get_video"
+brainrot = "brainrot.main:main"
 
 [build-system]
 requires = ["poetry-core"]
