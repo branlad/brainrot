@@ -88,14 +88,18 @@
     </div>
 
     <div class="url-form">
-        <form action="javascript:handleClick()">
+        <form action="javascript:fetchPost()">
             <label for="fname">Enter URL for Specific Reddit Post</label>
             <input type="text" id="fname" name="" placeholder="reddit.com/r/nosleep/sskfy37cm47">
             <button type="submit" id="generate">GENERATE</button>
 
         </form>
         
-        
+    </div>
+
+    <div class="video">
+
+
     </div>
 
     <script>
@@ -110,8 +114,27 @@
 
 
         function handleClick() {
-            console.log('click')
-    }
+            reddit_url = document.getElementById("fname").value;
+            return reddit_url
+        }
+
+        function fetchPost() {
+
+            handleClick()
+            console.log(reddit_url)
+            $.ajax({
+                url: '/api/get_post_from_url',
+                type: 'GET',
+                data: { url: reddit_url },
+                success: function(response) {
+                    $('#postTitle').text(response.title);
+                    $('#postContent').text(response.text);
+                },
+                error: function() {
+                    alert('Error fetching post.');
+                }
+            });
+        }
 
     </script>
 
